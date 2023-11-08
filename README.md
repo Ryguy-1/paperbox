@@ -1,4 +1,5 @@
 # Welcome to PaperBox 📦
+## PAPERBOX IS CURRENTLY IN DEVELOPMENT AND IS NOT YET READY FOR USE
 
 ## What is PaperBox?
 
