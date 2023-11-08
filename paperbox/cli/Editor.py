@@ -7,12 +7,15 @@ from textwrap import dedent
 class Editor(cmd.Cmd):
     intro = dedent(
         """
-                ____                        ____            
-            / __ \____ _____  ___  _____/ __ )____  _  __
-            / /_/ / __ `/ __ \/ _ \/ ___/ __  / __ \| |/_/
-            / ____/ /_/ / /_/ /  __/ /  / /_/ / /_/ />  <  
-            /_/    \__,_/ .___/\___/_/  /_____/\____/_/|_|  
-                    /_/                                  
+ ____                                 ____                     
+/\  _`\                              /\  _`\                   
+\ \ \L\ \ __     _____      __   _ __\ \ \L\ \    ___   __  _  
+ \ \ ,__/'__`\  /\ '__`\  /'__`\/\`'__\ \  _ <'  / __`\/\ \/'\ 
+  \ \ \/\ \L\.\_\ \ \L\ \/\  __/\ \ \/ \ \ \L\ \/\ \L\ \/>  </ 
+   \ \_\ \__/.\_\\ \ ,__/\ \____\\ \_\  \ \____/\ \____//\_/\_\
+    \/_/\/__/\/_/ \ \ \/  \/____/ \/_/   \/___/  \/___/ \//\/_/
+                   \ \_\                                       
+                    \/_/                                       
         """
     )
     prompt = "(paperbox) "
@@ -40,8 +43,8 @@ class Editor(cmd.Cmd):
 
     def do_exit(self, _):
         """Exit the CLI."""
-        self.console.print("[italic red]Exiting...[/]", style="italic blue")
-        return True  # this command tells cmd.Cmd to stop the CLI loop
+        self.console.print("[italic red]Exiting PaperBox...[/]", style="italic blue")
+        return True  # Exits the CLI
 
     def default(self, line):
         self.console.print(
