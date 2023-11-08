@@ -1,0 +1,24 @@
+# IDEs
+__pycache__/
+*.py[cod]
+*$py.class
+.idea/
+.vscode/
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+.coverage.*
+*.cover
+htmlcov/
+
+# Test results
+*.pyc
+__pycache__/
+*.pyo
+*nosetests.xml
+*coverage.xml
+.cache
+.hypothesis/
