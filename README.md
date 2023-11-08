@@ -4,5 +4,7 @@ PaperBox is a command line tool that allows you to take notes in plain english a
 
 ## How do I use PaperBox?
 ```
-TBD
+docker run -it -p 5000:5000 paperbox
+
+# Open browser to "localhost:5000"
 ```
