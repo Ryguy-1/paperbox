@@ -7,7 +7,7 @@ def run_ollama_passthrough_pipe(input: str) -> str:
 
     Params:
         input (str): The input to ollama.
-    
+
     Returns:
         str: The output of ollama.
     """

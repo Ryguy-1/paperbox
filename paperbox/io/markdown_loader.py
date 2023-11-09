@@ -7,7 +7,9 @@ class LangchainMarkdownLoader(object):
     def __init__(self, file_path):
         self.file_path = file_path
         self.loader = UnstructuredMarkdownLoader(
-            file_path=file_path, mode="elements", strategy="fast", 
+            file_path=file_path,
+            mode="elements",
+            strategy="fast",
         )
 
     def load_from_disk(self):
