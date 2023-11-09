@@ -15,6 +15,7 @@ from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSo
 from paperbox.io.markdown_document_loader import MarkdownDocumentLoader
 from paperbox.llm_pipelines.ollama_markdown_editor import OllamaMarkdownEditor
 from langchain.schema.document import Document
+from langchain.llms.ollama import Ollama
 from rich.console import Console
 from rich.markdown import Markdown
 from textwrap import dedent
@@ -22,7 +23,6 @@ from dataclasses import dataclass
 import inquirer
 from typing import List
 import cmd
-import os
 
 
 @dataclass
@@ -31,6 +31,7 @@ class CMDState(object):
 
     current_file_path: str = None
     current_ordered_loaded_documents: List[Document] = None
+    llm = Ollama(model="llama2")
 
 
 class Editor(cmd.Cmd):
@@ -55,13 +56,13 @@ class Editor(cmd.Cmd):
         """
     )
 
-    def onecmd(self, line: str) -> bool:
-        """Override the onecmd method to catch exceptions."""
-        try:
-            return super().onecmd(line)
-        except Exception as e:
-            self.console.print(f"Error: {e}", style="bold red")
-            return False  # Don't exit the CLI
+    # def onecmd(self, line: str) -> bool:
+    #     """Override the onecmd method to catch exceptions."""
+    #     try:
+    #         return super().onecmd(line)
+    #     except Exception as e:
+    #         self.console.print(f"Error: {e}", style="bold red")
+    #         return False  # Don't exit the CLI
 
     def preloop(self) -> None:
         self.console = Console()
@@ -108,6 +109,7 @@ class Editor(cmd.Cmd):
         section_to_edit = relevant_sections[section_index]
         # Regenerate this section's markdown based on input
         md_editor = OllamaMarkdownEditor(
+            loaded_ollama_llm=self.state.llm,
             section_to_rewrite=section_to_edit,
             document_context=self.state.current_ordered_loaded_documents,
         )
