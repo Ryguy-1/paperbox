@@ -32,26 +32,32 @@ class OllamaMarkdownEditor(object):
         rewrite_template = PromptTemplate.from_template(
             template=dedent(
                 """
-                You are a capable Markdown note taker. You are to rewrite the selected
-                section of the document given 1) Rewrite Instructions, 2) The Document for Context,
-                3) The Current Section. You must follow these rules in writing:
-                    1) For any math, use LaTeX for Markdown.
-                    2) Follow the style of the rest of the document.
-                ==== Rewrite Instructions ====
-                {inst}
-                ==== Document Context ====
-                {document_context}
-                ==== Section to Rewrite ====
-                {rewrite_context}
+                You are editing a markdown document. \n
+                
+                ======== EXAMPLE INPUTS ========\n
+                Input: #$#make it say port 4000 instead !!!! docker run -it --gpus all -p 5000:5000 paperbox:latest#$#\n
+                Output: docker run -it --gpus all -p 4000:4000 paperbox:latest\n
+
+                Input: #$#change the username from 'admin' to 'user' !!!! ssh admin@192.168.0.1#$#\n
+                Output: ssh user@192.168.0.1\n
+
+                Input: #$#add 'https://' at the beginning of example !!!! www.example.com#$#\n
+                Output: https://www.example.com\n
+
+                Input: #$#rewrite at 6 part to make it more formal !!!! Hey, wanna come to my place at 6? We're having a game night!#$#\n
+                Output: You are cordially invited to an evening of games and entertainment at my residence, commencing at 6 o'clock PM.\n
+
+                ======== YOUR INPUT ========\n
+                Input: #$#{inst} !!!! {rewrite_context}#$#\n
+                Output:
                 """
             ),
             partial_variables={
-                "document_context": "\n\n".join(
-                    [x.page_content for x in self.document_context]
-                ),
                 "rewrite_context": self.section_to_rewrite.page_content,
             },
         )
+        chain = rewrite_template | self.loaded_ollama_llm | StrOutputParser()
+        return chain.invoke({"inst": instructions})
 
 
 # # Set up the rewrite prompt with instructions and context
