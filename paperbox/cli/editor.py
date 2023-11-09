@@ -1,10 +1,12 @@
 from paperbox.cli.ollama import run_ollama_passthrough_pipe
 from paperbox.io.markdown_management import (
     get_all_markdown_file_names,
+    get_all_markdown_folder_names,
     add_markdown_folder,
     delete_markdown_folder,
     add_markdown_file,
     delete_markdown_file,
+    rename_markdown_folder,
     rename_markdown_file,
     move_markdown_file,
     copy_markdown_file,
@@ -63,6 +65,12 @@ class Editor(cmd.Cmd):
         """List all markdown files."""
         self.console.print("\n".join(get_all_markdown_file_names()), style="bold blue")
 
+    def do_list_markdown_folders(self, _) -> None:
+        """List all markdown folders."""
+        self.console.print(
+            "\n".join(get_all_markdown_folder_names()), style="bold blue"
+        )
+
     def do_add_markdown_folder(self, folder_name: str) -> None:
         """Add a markdown folder."""
         add_markdown_folder(folder_name)
@@ -82,6 +90,13 @@ class Editor(cmd.Cmd):
         """Delete a markdown file."""
         delete_markdown_file(file_name)
         self.console.print(f"Deleted file {file_name}", style="bold blue")
+
+    def do_rename_markdown_folder(self, old_new_folder: str) -> None:
+        """Rename a markdown folder."""
+        rename_markdown_folder(*old_new_folder.split(" "))
+        self.console.print(
+            f"Renamed folder {old_new_folder.split(' ')[0]} to {old_new_folder.split(' ')[1]}",
+        )
 
     def do_rename_markdown_file(self, old_new_file: str) -> None:
         """Rename a markdown file."""

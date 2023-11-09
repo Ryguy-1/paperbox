@@ -16,6 +16,16 @@ def get_all_markdown_file_names() -> List[str]:
     ]
 
 
+def get_all_markdown_folder_names() -> List[str]:
+    """Get all markdown folder names tree search."""
+    return [
+        "".join(os.path.join(root, folder).split(config["dirs"]["markdown"] + "/")[1])
+        + "/"
+        for root, dirs, _ in os.walk(config["dirs"]["markdown"])
+        for folder in dirs
+    ]
+
+
 def add_markdown_folder(folder_name: str) -> None:
     """Add a markdown folder."""
     os.makedirs(os.path.join(config["dirs"]["markdown"], folder_name), exist_ok=True)
@@ -40,6 +50,14 @@ def delete_markdown_file(file_name: str) -> None:
     if not file_name.endswith(".md"):
         raise ValueError("File name must end with .md")
     os.remove(os.path.join(config["dirs"]["markdown"], file_name))
+
+
+def rename_markdown_folder(old_folder_name: str, new_folder_name: str) -> None:
+    """Rename a markdown folder."""
+    os.rename(
+        os.path.join(config["dirs"]["markdown"], old_folder_name),
+        os.path.join(config["dirs"]["markdown"], new_folder_name),
+    )
 
 
 def rename_markdown_file(old_file_name: str, new_file_name: str) -> None:
