@@ -1,21 +1,19 @@
-import cmd
+from paperbox.cli.ollama import run_ollama_passthrough_pipe
 from rich.console import Console
 from rich.markdown import Markdown
 from textwrap import dedent
+import cmd
 
 
 class Editor(cmd.Cmd):
     intro = dedent(
         """
- ____                                 ____                     
-/\  _`\                              /\  _`\                   
-\ \ \L\ \ __     _____      __   _ __\ \ \L\ \    ___   __  _  
- \ \ ,__/'__`\  /\ '__`\  /'__`\/\`'__\ \  _ <'  / __`\/\ \/'\ 
-  \ \ \/\ \L\.\_\ \ \L\ \/\  __/\ \ \/ \ \ \L\ \/\ \L\ \/>  </ 
-   \ \_\ \__/.\_\\ \ ,__/\ \____\\ \_\  \ \____/\ \____//\_/\_\
-    \/_/\/__/\/_/ \ \ \/  \/____/ \/_/   \/___/  \/___/ \//\/_/
-                   \ \_\                                       
-                    \/_/                                       
+            ____                        ____            
+           / __ \____ _____  ___  _____/ __ )____  _  __
+          / /_/ / __ `/ __ \/ _ \/ ___/ __  / __ \| |/_/
+         / ____/ /_/ / /_/ /  __/ /  / /_/ / /_/ />  <  
+        /_/    \__,_/ .___/\___/_/  /_____/\____/_/|_|  
+                   /_/                                                                                
         """
     )
     prompt = "(paperbox) "
@@ -33,13 +31,16 @@ class Editor(cmd.Cmd):
         self.console = Console()
         self.console.print(self.boot_instructions, style="bold yellow")
 
-    def do_llm_list(self, _):
+    def do_ollama(self, line):
         """
-        List all Local LLMs.
+        Ollama Passthrough.
+        Run ollama with the given input and return the output.
 
-        Usage: llm_list
+        Usage: ollama <input>
+
+        Help: ollama help
         """
-        self.console.print(f"LLM List: {[]}", style="bold blue")
+        self.console.print(run_ollama_passthrough_pipe(line), style="bold blue")
 
     def do_exit(self, _):
         """Exit the CLI."""
