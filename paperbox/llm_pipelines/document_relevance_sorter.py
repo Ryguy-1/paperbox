@@ -33,6 +33,7 @@ class DocumentRelevanceSorter(object):
         Params:
             query (str): The query to sort by.
             k (int): The number of documents to return.
+            apply_long_context_reorder (bool): Whether to apply long context reorder.
 
         Returns:
             List[Document]: The sorted list of Document objects.

@@ -1,7 +1,12 @@
 from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.schema.document import Document
 from langchain.vectorstores.utils import filter_complex_metadata
+from paperbox.utils import get_config
 from typing import List
+import os
+
+
+config = get_config()
 
 
 class MarkdownDocumentLoader(object):
@@ -14,7 +19,13 @@ class MarkdownDocumentLoader(object):
         Params:
             file_path (str): The path to the markdown file.
         """
-        self.file_path = file_path
+        if file_path == "":
+            raise ValueError("File path cannot be empty.")
+        if not file_path.endswith(".md"):
+            raise ValueError(f"File must be a markdown file: {file_path}")
+        self.file_path = os.path.join(config["dirs"]["markdown"], file_path)
+        if not os.path.exists(self.file_path):
+            raise FileNotFoundError(f"File not found: {self.file_path}")
         self.allowed_types = (str, bool, int, float)
 
     def retrieve_from_disk_as_elements(self) -> List[Document]:

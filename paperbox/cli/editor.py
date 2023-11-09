@@ -11,10 +11,23 @@ from paperbox.io.markdown_management import (
     move_markdown_file,
     copy_markdown_file,
 )
+from paperbox.io.markdown_document_loader import MarkdownDocumentLoader
+from langchain.schema.document import Document
 from rich.console import Console
 from rich.markdown import Markdown
 from textwrap import dedent
+from dataclasses import dataclass
+from typing import List
 import cmd
+import os
+
+
+@dataclass
+class CMDState(object):
+    """A class to hold the state of the CLI."""
+
+    current_file_path: str = None
+    current_ordered_loaded_documents: List[Document] = None
 
 
 class Editor(cmd.Cmd):
@@ -40,6 +53,7 @@ class Editor(cmd.Cmd):
     )
 
     def onecmd(self, line: str) -> bool:
+        """Override the onecmd method to catch exceptions."""
         try:
             return super().onecmd(line)
         except Exception as e:
@@ -48,14 +62,27 @@ class Editor(cmd.Cmd):
 
     def preloop(self) -> None:
         self.console = Console()
+        self.state = CMDState()
         self.console.print(self.boot_instructions, style="bold yellow")
+
+    def do_load(self, file_path: str) -> None:
+        """Load a file to edit."""
+        self.console.print(f"Loading file {file_path}", style="bold blue")
+        if file_path == self.state.current_file_path:
+            self.console.print(f"File {file_path} already loaded", style="bold yellow")
+            return
+        md_doc_loader = MarkdownDocumentLoader(
+            file_path=file_path
+        )  # throws FileNotFoundError
+        self.state.current_file_path = file_path
+        self.state.current_ordered_loaded_documents = (
+            md_doc_loader.retrieve_from_disk_as_elements()
+        )
 
     def do_ollama(self, line) -> None:
         """
         Ollama Passthrough.
         Run ollama with the given input and return the output.
-
-        Usage: ollama <input>
 
         Help: ollama help
         """
