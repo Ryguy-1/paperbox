@@ -3,5 +3,6 @@ flask==3.0.0
 rich==13.6.0
 click==8.1.7
 langchain==0.0.332
-unstructured==0.10.29
-markdown==3.5.1
+unstructured[all-docs]==0.10.29
+sentence-transformers==2.2.2
+chromadb==0.4.16

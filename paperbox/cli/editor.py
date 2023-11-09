@@ -31,7 +31,7 @@ class Editor(cmd.Cmd):
         self.console = Console()
         self.console.print(self.boot_instructions, style="bold yellow")
 
-    def do_ollama(self, line):
+    def do_ollama(self, line) -> None:
         """
         Ollama Passthrough.
         Run ollama with the given input and return the output.
@@ -42,12 +42,12 @@ class Editor(cmd.Cmd):
         """
         self.console.print(run_ollama_passthrough_pipe(line), style="bold blue")
 
-    def do_exit(self, _):
+    def do_exit(self, _) -> bool:
         """Exit the CLI."""
         self.console.print("[italic red]Exiting PaperBox...[/]", style="italic blue")
         return True  # Exits the CLI
 
-    def default(self, line):
+    def default(self, line) -> None:
         self.console.print(
             f"Command [bold red]{line}[/] not recognized", style="bold yellow"
         )

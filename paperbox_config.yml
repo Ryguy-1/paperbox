@@ -1,0 +1,4 @@
+# PaperBox Config
+dirs:
+  markdown: generated/markdown
+  scratch_render: generated/scratch_render
