@@ -11,12 +11,15 @@ from paperbox.io.markdown_management import (
     move_markdown_file,
     copy_markdown_file,
 )
+from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSorter
 from paperbox.io.markdown_document_loader import MarkdownDocumentLoader
+from paperbox.llm_pipelines.ollama_markdown_editor import OllamaMarkdownEditor
 from langchain.schema.document import Document
 from rich.console import Console
 from rich.markdown import Markdown
 from textwrap import dedent
 from dataclasses import dataclass
+import inquirer
 from typing import List
 import cmd
 import os
@@ -65,6 +68,52 @@ class Editor(cmd.Cmd):
         self.state = CMDState()
         self.console.print(self.boot_instructions, style="bold yellow")
 
+    def do_e(self, line) -> None:
+        """
+        Edit a file.
+        Usage: e <natural_language_query_on_loaded_file>
+        """
+        if None in [
+            self.state.current_file_path,
+            self.state.current_ordered_loaded_documents,
+        ]:
+            self.console.print(
+                "No file loaded. Use [bold magenta]load[/] to load a file.",
+                style="bold yellow",
+            )
+            return
+        doc_rel_sorter = DocumentRelevanceSorter(
+            documents=self.state.current_ordered_loaded_documents
+        )
+        relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(
+            query=line, k=3, apply_long_context_reorder=False
+        )
+        # have user choose which section to edit
+        section_choices = [
+            f"{section.page_content[:50]}" for section in relevant_sections
+        ]
+        section_choices.append("Cancel")
+        section_choice = inquirer.prompt(
+            [
+                inquirer.List(
+                    "section",
+                    message="Which section would you like to edit?",
+                    choices=section_choices,
+                )
+            ]
+        )["section"]
+        if section_choice == "Cancel":
+            return
+        section_index = section_choices.index(section_choice)
+        section_to_edit = relevant_sections[section_index]
+        # Regenerate this section's markdown based on input
+        md_editor = OllamaMarkdownEditor(
+            section_to_rewrite=section_to_edit,
+            document_context=self.state.current_ordered_loaded_documents,
+        )
+        # TODO: Replace print with action
+        print(md_editor.rewrite_section(instructions=line))
+
     def do_load(self, file_path: str) -> None:
         """Load a file to edit."""
         self.console.print(f"Loading file {file_path}", style="bold blue")
@@ -73,7 +122,7 @@ class Editor(cmd.Cmd):
             return
         md_doc_loader = MarkdownDocumentLoader(
             file_path=file_path
-        )  # throws FileNotFoundError
+        )  # throws FileNotFoundError / ValueError
         self.state.current_file_path = file_path
         self.state.current_ordered_loaded_documents = (
             md_doc_loader.retrieve_from_disk_as_elements()
