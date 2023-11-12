@@ -40,14 +40,14 @@ class OllamaRewriter(object):
                 You will be a reliable and trusted part of the pipeline, only outputting as told to do so.
                 Stick as closely to the instructions as possible given the section to rewrite.
 
-                The section to rewrite is: {section_to_rewrite}\n
-                The instructions are: {inst}\n
-                Your final rewritten output:""",
+                The section to rewrite is: "{section_to_rewrite}"
+                The instructions are: "{inst}"
+                Your final rewritten output: """,
             partial_variables={
                 "section_to_rewrite": self.section_to_rewrite.page_content,
             },
         )
         chain = rewrite_template | self.llm | StrOutputParser()
         output = chain.invoke({"inst": instructions})
-        output = output.strip()
+        output = output.strip(" ")  # only strip spaces from the ends
         return output

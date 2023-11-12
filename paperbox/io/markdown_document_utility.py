@@ -1,16 +1,12 @@
-from langchain.document_loaders import UnstructuredMarkdownLoader
 from langchain.schema.document import Document
-from langchain.vectorstores.utils import filter_complex_metadata
 from paperbox.utils import get_config
-from typing import List
 import os
-
 
 config = get_config()
 
 
 class MarkdownDocumentUtility(object):
-    """Encapsulates working with a markdown file and Document Objects."""
+    """Encapsulates working with a markdown file and Document objects."""
 
     def __init__(self, file_path: str) -> None:
         """
@@ -26,47 +22,53 @@ class MarkdownDocumentUtility(object):
         self.file_path = os.path.join(config["dirs"]["markdown"], file_path)
         if not os.path.exists(self.file_path):
             raise FileNotFoundError(f"File not found: {self.file_path}")
-        self.allowed_types = (str, bool, int, float)
+        self.loaded_documents = []
+        self.load_from_disk()
 
-    def retrieve_from_disk_as_elements(self) -> List[Document]:
+    def load_from_disk(self):
         """
-        Load the markdown file into a Document object.
+        ReLoad the markdown file into self.loaded_documents.
+        Note, this method is also called by the constructor.
 
-        Returns:
-            List[Document]: A list of Document objects.
+        Document Format:
+            page_content (str): The page content.
+            metadata (dict): Metadata about the document.
         """
-        loader = UnstructuredMarkdownLoader(
-            file_path=self.file_path, mode="elements", strategy="fast"
-        )
-        return filter_complex_metadata(
-            loader.load(),
-            allowed_types=self.allowed_types,
-        )
+        with open(self.file_path, "r") as f:
+            lines = f.readlines()
+        # skip to first header
+        while not lines[0].startswith("#"):
+            lines.pop(0)
+        documents = []
+        current_document = None
+        for line in lines:
+            print(line)
+            if line.startswith("#"):  # Start of a new document
+                current_document = Document(
+                    page_content=line,
+                )
+                documents.append(current_document)
+            else:
+                current_document.page_content += line
+        self.loaded_documents = documents
 
-    def retrieve_from_disk_as_single(self) -> List[Document]:
+    def save_to_disk(self) -> None:
         """
-        Load the markdown file into a Document object.
+        Save the current Document objects to disk.
+        """
+        print(self.loaded_documents)
+        final_string = ""
+        for document in self.loaded_documents:
+            final_string += document.page_content
+        with open(self.file_path, "w") as f:
+            f.write(final_string)
 
-        Returns:
-            List[Document]: A list of Document objects (single element).
+    @staticmethod
+    def get_readable_header_from_document(document: Document) -> str:
         """
-        loader = UnstructuredMarkdownLoader(
-            file_path=self.file_path, mode="single", strategy="fast"
-        )
-        return filter_complex_metadata(
-            [loader.load()],
-            allowed_types=self.allowed_types,
-        )
-
-    def save_to_disk(self, documents: List[Document]) -> None:
-        """
-        Save the Document objects to disk.
+        Get a readable header from a document.
 
         Params:
-            documents (List[Document]): The Document objects to save.
+            document (Document): The document to get the header from.
         """
-        print(documents)
-        # TODO: Currently working on this. May have to change how the documents
-        # are originally loaded because I think we need to save the entire original
-        # string. This is because the formatting is currently lost when we load
-        # with the UnstructuredMarkdownLoader.
+        return document.page_content.split("\n")[0].replace("#", "").strip()

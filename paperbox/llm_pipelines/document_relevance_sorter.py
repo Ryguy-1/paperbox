@@ -45,7 +45,5 @@ class DocumentRelevanceSorter(object):
             }
         )
         relevant_documents = retriever.get_relevant_documents(query=query)
-        print("count before", chroma_db._collection.count())
         chroma_db._collection.delete(ids=document_ids)
-        print("count after", chroma_db._collection.count())
         return relevant_documents

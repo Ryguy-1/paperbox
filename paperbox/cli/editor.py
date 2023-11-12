@@ -14,13 +14,11 @@ from paperbox.io.markdown_management import (
 from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSorter
 from paperbox.io.markdown_document_utility import MarkdownDocumentUtility
 from paperbox.llm_pipelines.ollama_rewriter import OllamaRewriter
-from langchain.schema.document import Document
 from rich.console import Console
 from rich.markdown import Markdown
 from textwrap import dedent
 from dataclasses import dataclass
 import inquirer
-from typing import List
 import cmd
 
 
@@ -28,8 +26,7 @@ import cmd
 class CMDState(object):
     """A class to hold the state of the CLI."""
 
-    current_file_path: str = None
-    current_ordered_loaded_documents: List[Document] = None
+    markdown_utility: MarkdownDocumentUtility = None
     ollama_model_name: str = "mistral-openorca"
 
 
@@ -75,10 +72,7 @@ class Editor(cmd.Cmd):
         Follow Up: Enter the instructions for the section.
         """
         # --- Validate Loaded File ---
-        if None in [
-            self.state.current_file_path,
-            self.state.current_ordered_loaded_documents,
-        ]:
+        if self.state.markdown_utility is None:
             self.console.print(
                 "No file loaded. Use [bold magenta]load[/] to load a file.",
                 style="bold yellow",
@@ -86,34 +80,39 @@ class Editor(cmd.Cmd):
             return
         # --- Get the section to edit ---
         doc_rel_sorter = DocumentRelevanceSorter(
-            documents=self.state.current_ordered_loaded_documents, top_k=3
+            documents=self.state.markdown_utility.loaded_documents, top_k=3
         )
         relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(query=line)
         # have user choose which section to edit
         section_choices = [
-            f"{section.page_content[:50]}" for section in relevant_sections
+            f"{self.state.markdown_utility.get_readable_header_from_document(section)}"
+            for section in relevant_sections
         ]
         section_choices.append("Cancel")
         section_choice = inquirer.prompt(
             [
                 inquirer.List(
                     "section",
-                    message="Which section would you like to edit?",
+                    message="Edit section identifier.",
                     choices=section_choices,
                 )
             ]
         )["section"]
         if section_choice == "Cancel":
             return
-        section_edit_index = section_choices.index(section_choice)
-        section_to_edit = relevant_sections[section_edit_index]
+        section_edit_index = self.state.markdown_utility.loaded_documents.index(
+            relevant_sections[section_choices.index(section_choice)]
+        )
+        section_to_edit = self.state.markdown_utility.loaded_documents[
+            section_edit_index
+        ]
 
         # --- Edit Until Satisfied ---
         md_editor = OllamaRewriter(
             section_to_rewrite=section_to_edit,
             ollama_model_name=self.state.ollama_model_name,
         )
-        rewritten_section = ""
+        rewritten_section_text = ""
         while True:
             instructions = inquirer.prompt(
                 [
@@ -123,9 +122,11 @@ class Editor(cmd.Cmd):
                     )
                 ]
             )["instructions"]
-            rewritten_section = md_editor.rewrite_section(instructions=instructions)
+            rewritten_section_text = md_editor.rewrite_section(
+                instructions=instructions
+            )
             self.console.print(
-                Markdown(rewritten_section),
+                Markdown(rewritten_section_text),
                 style="bold blue",
             )
             satisfied = inquirer.prompt(
@@ -139,26 +140,16 @@ class Editor(cmd.Cmd):
             if satisfied:
                 break
         # --- Replace the section in the document ---
-        self.state.current_ordered_loaded_documents[
+        self.state.markdown_utility.loaded_documents[
             section_edit_index
-        ].page_content = rewritten_section
+        ].page_content = rewritten_section_text
         # --- Save the document ---
-        md_doc_loader = MarkdownDocumentUtility(file_path=self.state.current_file_path)
-        md_doc_loader.save_to_disk(self.state.current_ordered_loaded_documents)
+        self.state.markdown_utility.save_to_disk()
 
     def do_load(self, file_path: str) -> None:
         """Load a file to edit."""
         self.console.print(f"Loading file {file_path}", style="bold blue")
-        if file_path == self.state.current_file_path:
-            self.console.print(f"File {file_path} already loaded", style="bold yellow")
-            return
-        md_doc_loader = MarkdownDocumentUtility(
-            file_path=file_path
-        )  # throws FileNotFoundError / ValueError
-        self.state.current_file_path = file_path
-        self.state.current_ordered_loaded_documents = (
-            md_doc_loader.retrieve_from_disk_as_elements()
-        )
+        self.state.markdown_utility = MarkdownDocumentUtility(file_path=file_path)
 
     def do_ollama(self, line) -> None:
         """
