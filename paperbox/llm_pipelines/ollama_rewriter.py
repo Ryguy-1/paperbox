@@ -34,14 +34,14 @@ class OllamaRewriter(object):
         """
         rewrite_template = PromptTemplate.from_template(
             template="""
-                You are an AI assistant. Your job is to rewrite the following section of text.
-                Stick as closely to the instructions as possible or I will be really sad.
-                Take a deep breath and answer accurately.
+                You are an AI tasked with programmatically rewriting a section of a document.
+                You are in a code pipeline, and you are given the section to rewrite and instructions for how to rewrite it.
+                Any text you output will be taken as the rewritten section.
+                Stick as closely to the instructions as possible given the section to rewrite.
 
-                
-                The section to rewrite is: {section_to_rewrite}
-                The instructions are: {inst}
-                The final rewrite is:""",
+                The section to rewrite is: {section_to_rewrite}\n
+                The instructions are: {inst}\n
+                Your final rewritten output:""",
             partial_variables={
                 "section_to_rewrite": self.section_to_rewrite.page_content,
             },
