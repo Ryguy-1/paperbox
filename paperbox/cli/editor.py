@@ -86,12 +86,9 @@ class Editor(cmd.Cmd):
             return
         # --- Get the section to edit ---
         doc_rel_sorter = DocumentRelevanceSorter(
-            documents=self.state.current_ordered_loaded_documents,
-            top_k=3
+            documents=self.state.current_ordered_loaded_documents, top_k=3
         )
-        relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(
-            query=line
-        )
+        relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(query=line)
         # have user choose which section to edit
         section_choices = [
             f"{section.page_content[:50]}" for section in relevant_sections
