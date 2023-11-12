@@ -20,7 +20,7 @@ class OllamaRewriter(object):
         """
         self.section_to_rewrite = section_to_rewrite
         self.ollama_model_name = ollama_model_name
-        self.llm = Ollama(model=self.ollama_model_name)
+        self.llm = Ollama(model=self.ollama_model_name, temperature=0.7)
 
     def rewrite_section(self, instructions: str) -> str:
         """

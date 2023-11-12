@@ -13,7 +13,7 @@ from paperbox.io.markdown_management import (
 )
 from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSorter
 from paperbox.io.markdown_document_loader import MarkdownDocumentLoader
-from paperbox.llm_pipelines.ollama_rewriter import OllamaMarkdownEditor
+from paperbox.llm_pipelines.ollama_rewriter import OllamaRewriter
 from langchain.schema.document import Document
 from rich.console import Console
 from rich.markdown import Markdown
@@ -71,8 +71,10 @@ class Editor(cmd.Cmd):
     def do_e(self, line) -> None:
         """
         Edit a file.
-        Usage: e <natural_language_query_on_loaded_file>
+        Usage: e <section_to_edit>
+        Follow Up: Enter the instructions for the section.
         """
+        # --- Validate Loaded File ---
         if None in [
             self.state.current_file_path,
             self.state.current_ordered_loaded_documents,
@@ -82,11 +84,12 @@ class Editor(cmd.Cmd):
                 style="bold yellow",
             )
             return
+        # --- Get the section to edit ---
         doc_rel_sorter = DocumentRelevanceSorter(
             documents=self.state.current_ordered_loaded_documents
         )
         relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(
-            query=line, k=5, apply_long_context_reorder=False
+            query=line, k=3, apply_long_context_reorder=False
         )
         # have user choose which section to edit
         section_choices = [
@@ -106,13 +109,38 @@ class Editor(cmd.Cmd):
             return
         section_index = section_choices.index(section_choice)
         section_to_edit = relevant_sections[section_index]
-        # Regenerate this section's markdown based on input
-        md_editor = OllamaMarkdownEditor(
+        # --- Get instructions ---
+        md_editor = OllamaRewriter(
             section_to_rewrite=section_to_edit,
             ollama_model_name=self.state.ollama_model_name,
         )
-        # TODO: Replace print with action
-        print(md_editor.rewrite_section(instructions=line))
+        # --- Edit Until Satisfied ---
+        while True:
+            instructions = inquirer.prompt(
+                [
+                    inquirer.Text(
+                        "instructions",
+                        message="Enter the instructions for the section.",
+                    )
+                ]
+            )["instructions"]
+            rewritten_section = md_editor.rewrite_section(instructions=instructions)
+            self.console.print(
+                Markdown(rewritten_section),
+                style="bold blue",
+            )
+            satisfied = inquirer.prompt(
+                [
+                    inquirer.Confirm(
+                        "satisfied",
+                        message="Are you satisfied with the rewritten section?",
+                    )
+                ]
+            )["satisfied"]
+            if satisfied:
+                break
+        # --- Replace the section in the document ---
+        print("inserted into document")
 
     def do_load(self, file_path: str) -> None:
         """Load a file to edit."""

@@ -39,7 +39,8 @@ class DocumentRelevanceSorter(object):
             List[Document]: The sorted list of Document objects.
         """
         retriever = Chroma.from_documents(
-            documents=self.documents, embedding=self.embeddings
+            documents=self.documents,
+            embedding=self.embeddings,
         ).as_retriever(
             search_kwargs={
                 "k": len(self.documents) if k is None else k,
