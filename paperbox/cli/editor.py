@@ -55,13 +55,13 @@ class Editor(cmd.Cmd):
         """
     )
 
-    # def onecmd(self, line: str) -> bool:
-    #     """Override the onecmd method to catch exceptions."""
-    #     try:
-    #         return super().onecmd(line)
-    #     except Exception as e:
-    #         self.console.print(f"Error: {e}", style="bold red")
-    #         return False  # Don't exit the CLI
+    def onecmd(self, line: str) -> bool:
+        """Override the onecmd method to catch exceptions."""
+        try:
+            return super().onecmd(line)
+        except Exception as e:
+            self.console.print(f"Error: {e}", style="bold red")
+            return False  # Don't exit the CLI
 
     def preloop(self) -> None:
         self.console = Console()
