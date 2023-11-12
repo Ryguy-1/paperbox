@@ -9,12 +9,12 @@ import os
 config = get_config()
 
 
-class MarkdownDocumentLoader(object):
-    """Encapsulates the loading of a markdown file into Document Objects."""
+class MarkdownDocumentUtility(object):
+    """Encapsulates working with a markdown file and Document Objects."""
 
     def __init__(self, file_path: str) -> None:
         """
-        Initialize the MarkdownDocumentLoader.
+        Initialize the MarkdownDocumentUtility.
 
         Params:
             file_path (str): The path to the markdown file.
@@ -57,3 +57,16 @@ class MarkdownDocumentLoader(object):
             [loader.load()],
             allowed_types=self.allowed_types,
         )
+
+    def save_to_disk(self, documents: List[Document]) -> None:
+        """
+        Save the Document objects to disk.
+
+        Params:
+            documents (List[Document]): The Document objects to save.
+        """
+        print(documents)
+        # TODO: Currently working on this. May have to change how the documents
+        # are originally loaded because I think we need to save the entire original
+        # string. This is because the formatting is currently lost when we load
+        # with the UnstructuredMarkdownLoader.

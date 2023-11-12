@@ -20,7 +20,7 @@ class OllamaRewriter(object):
         """
         self.section_to_rewrite = section_to_rewrite
         self.ollama_model_name = ollama_model_name
-        self.llm = Ollama(model=self.ollama_model_name, temperature=0.7)
+        self.llm = Ollama(model=self.ollama_model_name, temperature=0)
 
     def rewrite_section(self, instructions: str) -> str:
         """
@@ -36,7 +36,8 @@ class OllamaRewriter(object):
             template="""
                 You are an AI tasked with programmatically rewriting a section of a document.
                 You are in a code pipeline, and you are given the section to rewrite and instructions for how to rewrite it.
-                Any text you output will be taken as the rewritten section.
+                Any text you output will be taken as the rewritten section exactly and inserted into the document downstream.
+                You will be a reliable and trusted part of the pipeline, only outputting as told to do so.
                 Stick as closely to the instructions as possible given the section to rewrite.
 
                 The section to rewrite is: {section_to_rewrite}\n

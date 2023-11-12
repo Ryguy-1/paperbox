@@ -25,3 +25,12 @@ PaperBox is a command line tool that allows you to take notes in plain english, 
    ```
 
 5. Open a browser and navigate to [http://localhost:5000](http://localhost:5000)
+
+# Table Below of benefits
+
+| Feature | Description |
+| --- | --- |
+| **Markdown** | PaperBox uses Markdown to render your notes in real time. |
+| **Math** | PaperBox uses KaTeX to render math in real time. |
+| **Code** | PaperBox uses Prism.js to render code in real time. |
+| **Custom LLMs** | PaperBox uses custom LLMs to translate between natural language and any renderable scripting language. |

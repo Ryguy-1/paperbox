@@ -12,7 +12,7 @@ from paperbox.io.markdown_management import (
     copy_markdown_file,
 )
 from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSorter
-from paperbox.io.markdown_document_loader import MarkdownDocumentLoader
+from paperbox.io.markdown_document_utility import MarkdownDocumentUtility
 from paperbox.llm_pipelines.ollama_rewriter import OllamaRewriter
 from langchain.schema.document import Document
 from rich.console import Console
@@ -105,14 +105,15 @@ class Editor(cmd.Cmd):
         )["section"]
         if section_choice == "Cancel":
             return
-        section_index = section_choices.index(section_choice)
-        section_to_edit = relevant_sections[section_index]
-        # --- Get instructions ---
+        section_edit_index = section_choices.index(section_choice)
+        section_to_edit = relevant_sections[section_edit_index]
+
+        # --- Edit Until Satisfied ---
         md_editor = OllamaRewriter(
             section_to_rewrite=section_to_edit,
             ollama_model_name=self.state.ollama_model_name,
         )
-        # --- Edit Until Satisfied ---
+        rewritten_section = ""
         while True:
             instructions = inquirer.prompt(
                 [
@@ -138,7 +139,12 @@ class Editor(cmd.Cmd):
             if satisfied:
                 break
         # --- Replace the section in the document ---
-        print("inserted into document")
+        self.state.current_ordered_loaded_documents[
+            section_edit_index
+        ].page_content = rewritten_section
+        # --- Save the document ---
+        md_doc_loader = MarkdownDocumentUtility(file_path=self.state.current_file_path)
+        md_doc_loader.save_to_disk(self.state.current_ordered_loaded_documents)
 
     def do_load(self, file_path: str) -> None:
         """Load a file to edit."""
@@ -146,7 +152,7 @@ class Editor(cmd.Cmd):
         if file_path == self.state.current_file_path:
             self.console.print(f"File {file_path} already loaded", style="bold yellow")
             return
-        md_doc_loader = MarkdownDocumentLoader(
+        md_doc_loader = MarkdownDocumentUtility(
             file_path=file_path
         )  # throws FileNotFoundError / ValueError
         self.state.current_file_path = file_path
