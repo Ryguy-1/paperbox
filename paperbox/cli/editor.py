@@ -55,13 +55,13 @@ class Editor(cmd.Cmd):
         """
     )
 
-    def onecmd(self, line: str) -> bool:
-        """Override the onecmd method to catch exceptions."""
-        try:
-            return super().onecmd(line)
-        except Exception as e:
-            self.console.print(f"Error: {e}", style="bold red")
-            return False  # Don't exit the CLI
+    # def onecmd(self, line: str) -> bool:
+    #     """Override the onecmd method to catch exceptions."""
+    #     try:
+    #         return super().onecmd(line)
+    #     except Exception as e:
+    #         self.console.print(f"Error: {e}", style="bold red")
+    #         return False  # Don't exit the CLI
 
     def preloop(self) -> None:
         self.console = Console()
@@ -86,10 +86,11 @@ class Editor(cmd.Cmd):
             return
         # --- Get the section to edit ---
         doc_rel_sorter = DocumentRelevanceSorter(
-            documents=self.state.current_ordered_loaded_documents
+            documents=self.state.current_ordered_loaded_documents,
+            top_k=3
         )
         relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(
-            query=line, k=3, apply_long_context_reorder=False
+            query=line
         )
         # have user choose which section to edit
         section_choices = [
