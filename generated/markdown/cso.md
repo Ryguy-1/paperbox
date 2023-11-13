@@ -32,3 +32,67 @@ This query will return all columns and rows from the 'animals' table where the '
 
 Remember that SQL is a powerful language for managing and retrieving data from relational databases. By understanding its basic syntax and clauses, you can efficiently write queries to select specific information from your tables.
 
+## Stream Operators in Java
+
+Stream operators are a fundamental concept in Java programming that allows developers to process and manipulate data in a declarative manner. They provide a way to transform, filter, and aggregate elements of a collection without changing the original data structure. In this section, we will discuss some common stream operators and demonstrate their usage with an example.
+
+1. `map()`: This operator is used to transform each element of the input stream into another type. For instance, if you have a list of integers, you can use map() to convert them into strings.
+
+Example:
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+numbers.stream().map(x -> x + " is an integer").forEach(System.out::println);
+```
+Output:
+```
+1 is an integer
+2 is an integer
+3 is an integer
+4 is an integer
+5 is an integer
+```
+
+2. `filter()`: This operator allows you to filter elements of the input stream based on a given condition. It returns a new stream containing only the elements that satisfy the specified predicate.
+
+Example:
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+numbers.stream().filter(x -> x % 2 == 0).forEach(System.out::println);
+```
+Output:
+```
+2
+4
+```
+
+3. `sorted()`: This operator sorts the elements of the input stream in ascending order based on their natural ordering or a specified Comparator.
+
+Example:
+```java
+List<Integer> numbers = Arrays.asList(5, 1, 4, 2, 3);
+numbers.stream().sorted().forEach(System.out::println);
+```
+Output:
+```
+1
+2
+3
+4
+5
+```
+
+4. `collect()`: This operator is used to collect the elements of the input stream into a single data structure, such as a list, set, or map. It allows you to aggregate and summarize data in various ways.
+
+Example:
+```java
+List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
+int sum = numbers.stream().collect(Collectors.summingInt(x -> x));
+System.out.println("Sum of the numbers: " + sum);
+```
+Output:
+```
+Sum of the numbers: 15
+```
+
+In conclusion, stream operators are a powerful tool for processing and manipulating data in Java. They provide a concise and expressive way to transform, filter, and aggregate elements without mutating the original collection. By understanding and using these operators effectively, developers can write more efficient and maintainable code.
+
