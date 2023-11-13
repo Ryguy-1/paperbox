@@ -37,7 +37,7 @@ class MarkdownDocumentUtility(object):
         with open(self.file_path, "r") as f:
             lines = f.readlines()
         if len(lines) == 0:
-            return  # no documents
+            raise ValueError(f"File is empty: {self.file_path}")
         # skip to first header
         while not lines[0].startswith("#"):
             lines.pop(0)

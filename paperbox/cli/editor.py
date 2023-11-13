@@ -145,7 +145,6 @@ class Editor(cmd.Cmd):
             documents=self.state.markdown_utility.loaded_documents, top_k=3
         )
         relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(query=line)
-        # have user choose which section to delete
         section_choices = [
             f"{self.state.markdown_utility.get_readable_header_from_document(section)}"
             for section in relevant_sections
@@ -194,7 +193,6 @@ class Editor(cmd.Cmd):
             documents=self.state.markdown_utility.loaded_documents, top_k=3
         )
         relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(query=line)
-        # have user choose which section to edit
         section_choices = [
             f"{self.state.markdown_utility.get_readable_header_from_document(section)}"
             for section in relevant_sections
