@@ -36,6 +36,8 @@ class MarkdownDocumentUtility(object):
         """
         with open(self.file_path, "r") as f:
             lines = f.readlines()
+        if len(lines) == 0:
+            return  # no documents
         # skip to first header
         while not lines[0].startswith("#"):
             lines.pop(0)

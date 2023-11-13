@@ -134,6 +134,12 @@ class Editor(cmd.Cmd):
                 style="bold yellow",
             )
             return
+        if len(self.state.markdown_utility.loaded_documents) == 0:
+            self.console.print(
+                "No sections to delete. Use [bold magenta]a[/] to add a section.",
+                style="bold yellow",
+            )
+            return
         # --- Get the section to delete ---
         doc_rel_sorter = DocumentRelevanceSorter(
             documents=self.state.markdown_utility.loaded_documents, top_k=3
@@ -174,6 +180,12 @@ class Editor(cmd.Cmd):
         if self.state.markdown_utility is None:
             self.console.print(
                 "No file loaded. Use [bold magenta]load[/] to load a file.",
+                style="bold yellow",
+            )
+            return
+        if len(self.state.markdown_utility.loaded_documents) == 0:
+            self.console.print(
+                "No sections to edit. Use [bold magenta]a[/] to add a section.",
                 style="bold yellow",
             )
             return
