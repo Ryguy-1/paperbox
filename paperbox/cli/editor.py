@@ -15,6 +15,7 @@ from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSo
 from paperbox.io.markdown_document_utility import MarkdownDocumentUtility
 from paperbox.llm_pipelines.ollama_markdown_rewriter import OllamaMarkdownRewriter
 from paperbox.llm_pipelines.ollama_markdown_writer import OllamaMarkdownWriter
+from paperbox.llm_pipelines.ollama_chat import OllamaChat
 from langchain.schema.document import Document
 from rich.console import Console
 from rich.markdown import Markdown
@@ -259,6 +260,12 @@ class Editor(cmd.Cmd):
         """Load a file to edit."""
         self.console.print(f"Loading file {file_path}", style="bold blue")
         self.state.markdown_utility = MarkdownDocumentUtility(file_path=file_path)
+
+    def do_q(self, line) -> None:
+        """Ask LLM a Question and Output the Answer."""
+        # --- Ask LLM a Question ---
+        ollama_chat = OllamaChat(ollama_model_name=self.state.ollama_model_name)
+        ollama_chat.chat(chat=line)
 
     def do_ollama(self, line) -> None:
         """
