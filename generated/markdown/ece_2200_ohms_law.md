@@ -81,3 +81,11 @@ The source provides the input signal, while the drain is the output terminal. Th
 
 In summary, the faucet analogy helps us understand the basic functioning of a transistor by comparing its terminals (source, drain, gate) to the components of a water control system. This understanding is essential for designing and building complex electronic systems that rely on transistors as their fundamental building blocks.
 
+## Conductivity
+
+The relationship between conductivity and resistivity can be described by the following equation:
+
+$σ = \frac{1}{ρ}$
+
+where $σ$ is the conductivity, and $ρ$ is the resistivity. This equation shows that as the resistivity increases, the conductivity decreases, and vice versa.
+
