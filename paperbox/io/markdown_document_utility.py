@@ -42,7 +42,6 @@ class MarkdownDocumentUtility(object):
         documents = []
         current_document = None
         for line in lines:
-            print(line)
             if line.startswith("#"):  # Start of a new document
                 current_document = Document(
                     page_content=line,
@@ -56,7 +55,6 @@ class MarkdownDocumentUtility(object):
         """
         Save the current Document objects to disk.
         """
-        print(self.loaded_documents)
         final_string = ""
         for document in self.loaded_documents:
             final_string += document.page_content

@@ -3,8 +3,8 @@ from langchain.schema import Document, StrOutputParser
 from langchain.prompts import PromptTemplate
 
 
-class OllamaRewriter(object):
-    """Defines an Ollama LangChain Rewriter Prompted Model."""
+class OllamaMarkdownRewriter(object):
+    """Defines an Ollama LangChain Markdown Rewriter Prompted Model."""
 
     def __init__(
         self,
@@ -12,7 +12,7 @@ class OllamaRewriter(object):
         ollama_model_name: str,
     ) -> None:
         """
-        Initialize the Ollama Rewriter.
+        Initialize the Ollama Markdown Rewriter.
 
         Params:
             section_to_rewrite (Document): The section to rewrite.
@@ -34,11 +34,13 @@ class OllamaRewriter(object):
         """
         rewrite_template = PromptTemplate.from_template(
             template="""
-                You are an AI tasked with programmatically rewriting a section of a document.
+                You are an AI tasked with programmatically rewriting a section of a document according to a specification.
                 You are in a code pipeline, and you are given the section to rewrite and instructions for how to rewrite it.
                 Any text you output will be taken as the rewritten section exactly and inserted into the document downstream.
                 You will be a reliable and trusted part of the pipeline, only outputting as told to do so.
                 Stick as closely to the instructions as possible given the section to rewrite.
+                Note that any Math equations should be written in LaTeX surrounded by $ signs.
+                The document must be written in Markdown.
 
                 The section to rewrite is: "{section_to_rewrite}"
                 The instructions are: "{inst}"
@@ -49,5 +51,6 @@ class OllamaRewriter(object):
         )
         chain = rewrite_template | self.llm | StrOutputParser()
         output = chain.invoke({"inst": instructions})
-        output = output.strip(" ")  # only strip spaces from the ends
+        output = output.strip()  # only strip spaces from the ends
+        output += "\n\n"  # add a newline to the end
         return output

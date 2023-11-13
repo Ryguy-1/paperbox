@@ -4,31 +4,11 @@
 
 ## What is PaperBox?
 
-PaperBox is a command line tool that allows you to take notes in plain English, shorthand, or whatever's quickest. It uses LLMs to translate your work to beautiful renderable scripts in real time to be viewed from a local server and saved in the format of your choice. Due to this fact, even generating math notes with tools like LaTeX can be done with relative ease. PaperBox is built on top of [Ollama](https://github.com/jmorganca/ollama), using custom LLMs to translate between natural language and any renderable scripting language.
-
-For example, if you wanted to generate a math note in LaTeX format, you could write:
-
-```latex
-\documentclass{article}
-\usepackage{amsmath}
-\begin{document}
-Integrate the following function: f(x) = x^2 + 3x + 2.
-\end{document}
-```
+PaperBox is a command line tool that allows you to take notes in plain English, shorthand, or whatever's quickest. It uses LLMs to translate your work to beautiful renderable scripts in real time to be viewed from a local server and saved in the format of your choice. Due to this fact, even generating math notes with tools like LaTeX can be done with relative ease. PaperBox is built on top of [Google](https://www.google.com), using custom LLMs to translate between natural language and any renderable scripting language.
 
 PaperBox would then translate your note into a LaTeX-formatted script, making it easy to view and save in the desired format.
 
-# Markdown Latex Example
-
-Here's an example of how you can write a math equation using Markdown Latex:
-
-```markdown
-## A simple equation
-
-$$ x^2 + 3x + 2 = 0 $$
-```
-
-This will be translated into a beautiful LaTeX-formatted script, making it easy to view and save in the desired format.## How do I use PaperBox?
+# How to use PaperBox
 
 1. Install [Docker](https://docs.docker.com/engine/install/)
 

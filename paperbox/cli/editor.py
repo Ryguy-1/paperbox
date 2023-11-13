@@ -13,7 +13,9 @@ from paperbox.io.markdown_management import (
 )
 from paperbox.llm_pipelines.document_relevance_sorter import DocumentRelevanceSorter
 from paperbox.io.markdown_document_utility import MarkdownDocumentUtility
-from paperbox.llm_pipelines.ollama_rewriter import OllamaRewriter
+from paperbox.llm_pipelines.ollama_markdown_rewriter import OllamaMarkdownRewriter
+from paperbox.llm_pipelines.ollama_markdown_writer import OllamaMarkdownWriter
+from langchain.schema.document import Document
 from rich.console import Console
 from rich.markdown import Markdown
 from textwrap import dedent
@@ -65,6 +67,103 @@ class Editor(cmd.Cmd):
         self.state = CMDState()
         self.console.print(self.boot_instructions, style="bold yellow")
 
+    def do_a(self, line) -> None:
+        """
+        Add a section.
+        Usage: a <section_description>
+        """
+        # --- Validate Loaded File ---
+        if self.state.markdown_utility is None:
+            self.console.print(
+                "No file loaded. Use [bold magenta]load[/] to load a file.",
+                style="bold yellow",
+            )
+            return
+        # --- Add Until Satisfied ---
+        md_writer = OllamaMarkdownWriter(
+            ollama_model_name=self.state.ollama_model_name,
+        )
+        written_section_text = md_writer.write_section(instructions=line)
+        self.console.print(
+            Markdown(written_section_text),
+            style="bold blue",
+        )
+        while True:
+            satisfied = inquirer.prompt(
+                [
+                    inquirer.Confirm(
+                        "satisfied",
+                        message="Are you satisfied with the written section?",
+                    )
+                ]
+            )["satisfied"]
+            if satisfied:
+                break
+            instructions = inquirer.prompt(
+                [
+                    inquirer.Text(
+                        "instructions",
+                        message="Enter the instructions for the section.",
+                    )
+                ]
+            )["instructions"]
+            written_section_text = md_writer.write_section(instructions=instructions)
+            self.console.print(
+                Markdown(written_section_text),
+                style="bold blue",
+            )
+
+        # --- Add the section to the document ---
+        self.state.markdown_utility.loaded_documents.append(
+            Document(
+                page_content=written_section_text,
+            )
+        )
+        # --- Save the document ---
+        self.state.markdown_utility.save_to_disk()
+
+    def do_d(self, line) -> None:
+        """
+        Delete a section.
+        Usage: d <section_to_delete>
+        """
+        # --- Validate Loaded File ---
+        if self.state.markdown_utility is None:
+            self.console.print(
+                "No file loaded. Use [bold magenta]load[/] to load a file.",
+                style="bold yellow",
+            )
+            return
+        # --- Get the section to delete ---
+        doc_rel_sorter = DocumentRelevanceSorter(
+            documents=self.state.markdown_utility.loaded_documents, top_k=3
+        )
+        relevant_sections = doc_rel_sorter.get_sorted_by_relevance_to_query(query=line)
+        # have user choose which section to delete
+        section_choices = [
+            f"{self.state.markdown_utility.get_readable_header_from_document(section)}"
+            for section in relevant_sections
+        ]
+        section_choices.append("Cancel")
+        section_choice = inquirer.prompt(
+            [
+                inquirer.List(
+                    "section",
+                    message="Delete section identifier.",
+                    choices=section_choices,
+                )
+            ]
+        )["section"]
+        if section_choice == "Cancel":
+            return
+        section_delete_index = self.state.markdown_utility.loaded_documents.index(
+            relevant_sections[section_choices.index(section_choice)]
+        )
+        # --- Delete the section ---
+        self.state.markdown_utility.loaded_documents.pop(section_delete_index)
+        # --- Save the document ---
+        self.state.markdown_utility.save_to_disk()
+
     def do_e(self, line) -> None:
         """
         Edit a file.
@@ -108,7 +207,7 @@ class Editor(cmd.Cmd):
         ]
 
         # --- Edit Until Satisfied ---
-        md_editor = OllamaRewriter(
+        md_editor = OllamaMarkdownRewriter(
             section_to_rewrite=section_to_edit,
             ollama_model_name=self.state.ollama_model_name,
         )
