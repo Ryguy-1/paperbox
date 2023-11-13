@@ -35,7 +35,7 @@ class DocumentRelevanceSorter(object):
         """
         document_ids = [str(i) for i in range(1, len(self.documents) + 1)]
         if len(document_ids) == 0:
-            return [] # no documents
+            return []  # no documents
         chroma_db = Chroma.from_documents(
             documents=self.documents,
             embedding=self.embeddings,
