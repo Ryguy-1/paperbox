@@ -41,7 +41,8 @@ class OllamaMarkdownRewriter(object):
                 Stick as closely to the instructions as possible given the section to rewrite.
                 Please be concise and to the point, only writing what is necessary to fulfill the instructions.
                 Note that any Math equations should be written in LaTeX surrounded by $ signs.
-                The section must be written in Markdown with a proper header (#).
+                The section must have a header representative of the section (starting with #).
+                The section must be written in Markdown.
 
                 The section to rewrite is: "{section_to_rewrite}"
                 The instructions are: "{inst}"
