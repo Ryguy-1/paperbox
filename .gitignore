@@ -22,3 +22,7 @@ __pycache__/
 *coverage.xml
 .cache
 .hypothesis/
+
+# ignore all in generated/markdown that is not Welcome.md
+generated/markdown/*
+!generated/markdown/Welcome.md
