@@ -122,6 +122,7 @@ class Editor(cmd.Cmd):
         )
         # --- Save the document ---
         self.state.markdown_utility.save_to_disk()
+        self.state.markdown_utility.load_from_disk()
 
     def do_d(self, line) -> None:
         """
@@ -169,6 +170,7 @@ class Editor(cmd.Cmd):
         self.state.markdown_utility.loaded_documents.pop(section_delete_index)
         # --- Save the document ---
         self.state.markdown_utility.save_to_disk()
+        self.state.markdown_utility.load_from_disk()
 
     def do_e(self, line) -> None:
         """
@@ -255,6 +257,7 @@ class Editor(cmd.Cmd):
         ].page_content = rewritten_section_text
         # --- Save the document ---
         self.state.markdown_utility.save_to_disk()
+        self.state.markdown_utility.load_from_disk()
 
     def do_load(self, file_path: str) -> None:
         """Load a file to edit."""
@@ -275,6 +278,20 @@ class Editor(cmd.Cmd):
         Help: ollama help
         """
         self.console.print(run_ollama_passthrough_pipe(line), style="bold blue")
+
+    def do_get_ollama_model(self, _) -> None:
+        """Get the current Ollama Model."""
+        self.console.print(
+            f"Current Ollama Model: {self.state.ollama_model_name}", style="bold blue"
+        )
+
+    def do_switch_ollama_model(self, line) -> None:
+        """
+        Switch the Ollama Model.
+        Usage: switch_ollama_model <ollama_model_name>
+        """
+        self.state.ollama_model_name = line
+        self.console.print(f"Switched to Ollama Model {line}", style="bold blue")
 
     def do_list_markdown_files(self, _) -> None:
         """List all markdown files."""

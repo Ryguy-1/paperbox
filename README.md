@@ -1,27 +1,40 @@
-# Welcome to PaperBox 📦
-
-## PAPERBOX IS CURRENTLY IN DEVELOPMENT AND IS NOT YET READY FOR USE
+# Welcome to PaperBox [Functional, Early Development] 📦
 
 ## What is PaperBox?
 
-PaperBox is a command line tool that allows you to take notes in plain english, shorthand, or whatever's quickest. It uses LLMs to translate your work to beautiful renderable scripts in real time to be viewed from a local server and saved in the format of your choice. Due to this fact, even generating math notes with tools like LaTeX can be done with relative ease. PaperBox is built on top of [Ollama](https://github.com/jmorganca/ollama), using custom LLMs to translate between natural language and any renderable scripting language.
+PaperBox is a command line tool that allows you to take notes in plain english, shorthand, or whatever's quickest. It uses LLMs to translate your work to beautiful markdown in real time. Paperbox even understands math described in english - it renders it directly in the markdown document in LaTeX. PaperBox is built on top of [Ollama](https://github.com/jmorganca/ollama), using custom LLMs to translate between natural language and any renderable scripting language.
 
-## How do I use PaperBox?
+## PaperBox Early Stage Tutorial
 
-1. Install [Docker](https://docs.docker.com/engine/install/)
-
-2. (Optional) Install [Nvidia Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installation)
-
-3. Get the PaperBox Docker image
+0. It is recommended you use VSCode for the early version of PaperBox. It supports live markdown previewing until PaperBox may or may not add live server (who knows?).
+1. Install [Ollama](https://github.com/jmorganca/ollama)
+   ```
+   https://github.com/jmorganca/ollama
+   ```
+1. If you wish to use the defualt model (recommended for best performance), run the following. Otherwise, swap this for the model you want to use from ollama:
 
    ```
-   docker pull ryguy-1/paperbox:latest
+   ollama pull mistral-openorca
    ```
 
-4. Run the PaperBox Docker image (with interactive terminal)
+   - NOTE: if you choose to use a different model, make sure when you start the cli to run the following command:
+     ```
+     switch_ollama_model <model_name>
+     ```
 
+1. Clone the repo
    ```
-   docker run -it --gpus all -p 5000:5000 paperbox:latest
+   git clone https://github.com/Ryguy-1/paperbox.git
    ```
+1. Install the dependencies
+   ```
+   pip install -r requirements.txt
+   ```
+1. Run the program
+   ```
+   python cli.py
+   ```
+1. Use the help command to get started!
+   ![Alt text](images/help.png)
 
-5. Open a browser and navigate to [http://localhost:5000](http://localhost:5000)
+1. (I have found VSCode side-by-side preview view to be incredibly quick using PaperBox. It will render the markdown live for you, and, if PaperBox fails something you wish to edit quicker by hand, you can do so and ask PaperBox to reload the file.)
