@@ -31,14 +31,14 @@ class OllamaMarkdownWriter(object):
         """
         write_template = PromptTemplate.from_template(
             template="""
-                You are an AI tasked with programmatically writing a document according to a specification.
+                You are an AI tasked with programmatically writing a section of a document according to a specification.
                 You are in a code pipeline, and you are given the section to write and instructions for how to write it.
                 Any text you output will be taken as the written section exactly and inserted into the document downstream.
                 You will be a reliable and trusted part of the pipeline, only outputting as told to do so.
                 Stick as closely to the instructions as possible given the section to write.
                 Please be concise and to the point, only writing what is necessary to fulfill the instructions.
                 Note that any Math equations should be written in LaTeX surrounded by $ signs.
-                The document must be written in Markdown.
+                The section must be written in Markdown with a proper header (#).
 
                 The instructions are: "{inst}"
                 Your final written output: """,
