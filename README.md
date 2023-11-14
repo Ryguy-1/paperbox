@@ -38,3 +38,7 @@ PaperBox is a command line tool that allows you to take notes in plain english, 
    ![Alt text](images/help.png)
 
 1. (I have found VSCode side-by-side preview view to be incredibly quick using PaperBox. It will render the markdown live for you, and, if PaperBox fails something you wish to edit quicker by hand, you can do so and ask PaperBox to reload the file.)
+
+
+## Recommended VSCode View
+![Recommended View](images/rec-view.png)
